@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deadman — Киберспортивный компьютерный клуб</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#09090b',
+                        cardbg: '#121216',
+                        bordercol: '#27272a',
+                        neonred: '#ff003c',
+                        acidgreen: '#00ff66',
+                        neonblue: '#00f0ff'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #09090b;
+            color: #f4f4f5;
+            overflow-x: hidden;
+        }
+        .font-cyber {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .cyber-glow-red {
+            box-shadow: 0 0 20px rgba(255, 0, 60, 0.4);
+        }
+        .cyber-glow-green {
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.4);
+        }
+        .cyber-border-red {
+            border: 1px solid rgba(255, 0, 60, 0.5);
+        }
+        .cyber-border-green {
+            border: 1px solid rgba(0, 255, 102, 0.5);
+        }
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .glitch-text::before {
+            left: 2px; text-shadow: -2px 0 #ff003c; clip: rect(24px, 550px, 90px, 0); animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px; text-shadow: -2px 0 #00ff66; clip: rect(85px, 550px, 140px, 0); animation: glitch-anim-2 2.5s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(12px, 999px, 44px, 0); }
+            20% { clip: rect(60px, 999px, 12px, 0); }
+            40% { clip: rect(20px, 999px, 80px, 0); }
+            60% { clip: rect(75px, 999px, 30px, 0); }
+            80% { clip: rect(5px, 999px, 95px, 0); }
+            100% { clip: rect(40px, 999px, 60px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(70px, 999px, 20px, 0); }
+            20% { clip: rect(10px, 999px, 65px, 0); }
+            40% { clip: rect(50px, 999px, 15px, 0); }
+            60% { clip: rect(90px, 999px, 45px, 0); }
+            80% { clip: rect(30px, 999px, 85px, 0); }
+            100% { clip: rect(15px, 999px, 55px, 0); }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #121216;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #ff003c;
+            border-radius: 4px;
+        }
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+        /* Page transition */
+        .page-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .page-content.active {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="custom-scrollbar selection:bg-neonred selection:text-white">
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-28 opacity-0 transition-all duration-300 bg-cardbg border cyber-border-green px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+        <i data-lucide="check-circle" class="text-acidgreen w-6 h-6"></i>
+        <div>
+            <h4 class="font-bold font-cyber text-sm text-white" id="toast-title">Успешно!</h4>
+            <p class="text-xs text-zinc-400" id="toast-desc">Действие выполнено.</p>
+        </div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-40 bg-darkbg/90 backdrop-blur-md border-b border-zinc-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" onclick="switchPage('home')" class="flex items-center gap-3 group cursor-pointer">
+                <div class="w-10 h-10 bg-neonred/10 border cyber-border-red flex items-center justify-center rounded-lg group-hover:bg-neonred/20 transition-all">
+                    <i data-lucide="skull" class="text-neonred w-6 h-6 animate-pulse"></i>
+                </div>
+                <div>
+                    <span class="font-cyber font-black text-2xl tracking-wider text-white glitch-text" data-text="DEADMAN">DEADMAN</span>
+                    <span class="block text-[10px] tracking-widest text-acidgreen font-mono uppercase">Cyber Club</span>
+                </div>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center gap-1 bg-cardbg/80 border border-zinc-800 p-1.5 rounded-2xl">
+                <button onclick="switchPage('home')" class="nav-btn px-5 py-2 rounded-xl text-sm font-medium transition-all text-zinc-400 hover:text-white hover:bg-zinc-800/50" data-target="home">Главная</button>
+                <button onclick="switchPage('about')" class="nav-btn px-5 py-2 rounded-xl text-sm font-medium transition-all text-zinc-400 hover:text-white hover:bg-zinc-800/50" data-target="about">Клуб и Зоны</button>
+                <button onclick="switchPage('tariffs')" class="nav-btn px-5 py-2 rounded-xl text-sm font-medium transition-all text-zinc-400 hover:text-white hover:bg-zinc-800/50" data-target="tariffs">Тарифы</button>
+                <button onclick="switchPage('tournaments')" class="nav-btn px-5 py-2 rounded-xl text-sm font-medium transition-all text-zinc-400 hover:text-white hover:bg-zinc-800/50" data-target="tournaments">Турниры</button>
+                <button onclick="switchPage('contacts')" class="nav-btn px-5 py-2 rounded-xl text-sm font-medium transition-all text-zinc-400 hover:text-white hover:bg-zinc-800/50" data-target="contacts">Контакты</button>
+            </nav>
+
+            <!-- CTA Booking Header Button -->
+            <div class="hidden lg:flex items-center gap-4">
+                <div class="flex items-center gap-2 text-xs font-mono text-zinc-400">
+                    <span class="w-2.5 h-2.5 rounded-full bg-acidgreen animate-ping"></span>
+                    <span>Свободно: <strong class="text-white">18 ПК</strong></span>
+                </div>
+                <button onclick="openBookingModal()" class="relative group overflow-hidden px-6 py-2.5 bg-neonred text-white font-cyber font-bold text-xs tracking-wider uppercase rounded-xl cyber-glow-red hover:bg-red-600 transition-all">
+                    <span class="relative z-10 flex items-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4"></i> Бронь мест
+                    </span>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-zinc-400 hover:text-white">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-cardbg border-b border-zinc-800 px-4 pt-2 pb-6 space-y-2">
+            <button onclick="switchPage('home'); toggleMobileMenu();" class="block w-full text-left px-4 py-3 rounded-lg text-zinc-300 hover:bg-zinc-800 font-medium">Главная</button>
+            <button onclick="switchPage('about'); toggleMobileMenu();" class="block w-full text-left px-4 py-3 rounded-lg text-zinc-300 hover:bg-zinc-800 font-medium">Клуб и Зоны</button>
+            <button onclick="switchPage('tariffs'); toggleMobileMenu();" class="block w-full text-left px-4 py-3 rounded-lg text-zinc-300 hover:bg-zinc-800 font-medium">Тарифы</button>
+            <button onclick="switchPage('tournaments'); toggleMobileMenu();" class="block w-full text-left px-4 py-3 rounded-lg text-zinc-300 hover:bg-zinc-800 font-medium">Турниры</button>
+            <button onclick="switchPage('contacts'); toggleMobileMenu();" class="block w-full text-left px-4 py-3 rounded-lg text-zinc-300 hover:bg-zinc-800 font-medium">Контакты</button>
+            <button onclick="openBookingModal(); toggleMobileMenu();" class="w-full mt-2 py-3 bg-neonred text-white font-cyber font-bold rounded-lg text-center uppercase tracking-wider">Забронировать ПК</button>
+        </div>
+    </header>
+
+    <!-- Main Content Container (SPA Pages) -->
+    <main class="pt-20">
+
+        <!-- ================= PAGE 1: HOME ================= -->
+        <div id="page-home" class="page-content active">
+            <!-- Hero Section -->
+            <section class="relative min-h-[90vh] flex items-center justify-center bg-grid overflow-hidden px-4">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-darkbg/80 to-darkbg"></div>
+                <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-neonred/10 rounded-full blur-[140px] pointer-events-none"></div>
+                
+                <div class="relative max-w-5xl mx-auto text-center z-10 space-y-8 py-20">
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cardbg border cyber-border-red text-xs font-mono uppercase tracking-widest text-neonred">
+                        <i data-lucide="shield-alert" class="w-4 h-4"></i> Киберспортивная арена нового поколения
+                    </div>
+                    
+                    <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black font-cyber tracking-tight text-white uppercase leading-none">
+                        ПОГРУЗИСЬ В <span class="text-neonred glitch-text" data-text="ХАОС">ХАОС</span>
+                    </h1>
+                    
+                    <p class="max-w-2xl mx-auto text-zinc-400 text-lg sm:text-xl font-light">
+                        Топовое железо RTX 4080 / i9, мониторы 360 Гц, молниеносный пинг и мрачная киберпанк атмосфера Deadman ждут тебя 24/7.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                        <button onclick="openBookingModal()" class="w-full sm:w-auto px-8 py-4 bg-neonred text-white font-cyber font-bold tracking-wider rounded-xl cyber-glow-red hover:bg-red-600 transition-all flex items-center justify-center gap-3 text-sm uppercase">
+                            <i data-lucide="monitor" class="w-5 h-5"></i> Забронировать место
+                        </button>
+                        <button onclick="switchPage('tariffs')" class="w-full sm:w-auto px-8 py-4 bg-cardbg border border-zinc-700 text-white font-cyber font-bold tracking-wider rounded-xl hover:border-acidgreen hover:text-acidgreen transition-all flex items-center justify-center gap-3 text-sm uppercase">
+                            <i data-lucide="tag" class="w-5 h-5"></i> Посмотреть тарифы
+                        </button>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-16">
+                        <div class="p-6 bg-cardbg/60 border border-zinc-800 rounded-2xl backdrop-blur-sm">
+                            <div class="text-3xl sm:text-4xl font-black font-cyber text-acidgreen">60+</div>
+                            <div class="text-xs text-zinc-400 mt-1 uppercase font-mono">Мощных ПК</div>
+                        </div>
+                        <div class="p-6 bg-cardbg/60 border border-zinc-800 rounded-2xl backdrop-blur-sm">
+                            <div class="text-3xl sm:text-4xl font-black font-cyber text-neonred">360 Гц</div>
+                            <div class="text-xs text-zinc-400 mt-1 uppercase font-mono">Частота кадров</div>
+                        </div>
+                        <div class="p-6 bg-cardbg/60 border border-zinc-800 rounded-2xl backdrop-blur-sm">
+                            <div class="text-3xl sm:text-4xl font-black font-cyber text-neonblue">24/7</div>
+                            <div class="text-xs text-zinc-400 mt-1 uppercase font-mono">Режим работы</div>
+                        </div>
+                        <div class="p-6 bg-cardbg/60 border border-zinc-800 rounded-2xl backdrop-blur-sm">
+                            <div class="text-3xl sm:text-4xl font-black font-cyber text-white">1 мс</div>
+                            <div class="text-xs text-zinc-400 mt-1 uppercase font-mono">Пинг в играх</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Preview Section -->
+            <section class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center space-y-4 mb-16">
+                    <h2 class="text-3xl sm:text-5xl font-black font-cyber uppercase tracking-wider">ПОЧЕМУ ИМЕННО <span class="text-neonred">DEADMAN</span>?</h2>
+                    <p class="text-zinc-400 max-w-xl mx-auto">Мы создали идеальные условия для киберспортсменов и хардкорных геймеров.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="p-8 bg-cardbg border border-zinc-800 rounded-3xl hover:border-neonred transition-all group">
+                        <div class="w-14 h-14 bg-neonred/10 border cyber-border-red rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="cpu" class="text-neonred w-7 h-7"></i>
+                        </div>
+                        <h3 class="font-cyber font-bold text-xl mb-3 text-white">Топовое железо</h3>
+                        <p class="text-zinc-400 text-sm leading-relaxed">Видеокарты NVIDIA RTX 4080, процессоры Intel Core i9 последних поколений, 32 ГБ быстрых ОЗУ.</p>
+                    </div>
+
+                    <div class="p-8 bg-cardbg border border-zinc-800 rounded-3xl hover:border-acidgreen transition-all group">
+                        <div class="w-14 h-14 bg-acidgreen/10 border cyber-border-green rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="crosshair" class="text-acidgreen w-7 h-7"></i>
+                        </div>
+                        <h3 class="font-cyber font-bold text-xl mb-3 text-white">Периферия PRO</h3>
+                        <p class="text-zinc-400 text-sm leading-relaxed">Мыши Logitech G Pro X, клавиатуры Razer, наушники HyperX с объемным звуком и коврики размера XXL.</p>
+                    </div>
+
+                    <div class="p-8 bg-cardbg border border-zinc-800 rounded-3xl hover:border-neonblue transition-all group">
+                        <div class="w-14 h-14 bg-blue-500/10 border border-blue-500/50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                            <i data-lucide="wifi" class="text-neonblue w-7 h-7"></i>
+                        </div>
+                        <h3 class="font-cyber font-bold text-xl mb-3 text-white">Оптический гигабит</h3>
+                        <p class="text-zinc-400 text-sm leading-relaxed">Прямое оптоволоконное подключение без задержек. Никаких лагов в разгар файта в CS2 или Dota 2.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+
+        <!-- ================= PAGE 2: ABOUT / ZONES ================= -->
+        <div id="page-about" class="page-content">
+            <div class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center space-y-4 mb-16">
+                    <h1 class="text-4xl sm:text-6xl font-black font-cyber uppercase tracking-wider">ЗОНЫ КЛУБА И <span class="text-acidgreen">АРСЕНАЛ</span></h1>
+                    <p class="text-zinc-400 max-w-xl mx-auto">Выбирай уровень комфорта под свои игровые задачи.</p>
+                </div>
+
+                <!-- Zones Grid -->
+                <div class="space-y-12">
+                    <!-- Zone 1 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-cardbg border border-zinc-800 rounded-3xl overflow-hidden p-6 sm:p-8">
+                        <div class="space-y-6">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-zinc-800 rounded-lg text-xs font-mono text-zinc-300">
+                                <i data-lucide="shield" class="w-4 h-4 text-zinc-400"></i> Базовый уровень
+                            </div>
+                            <h2 class="text-3xl font-cyber font-bold text-white">Стандарт зона</h2>
+                            <p class="text-zinc-400 text-sm leading-relaxed">
+                                Отличный выбор для комфортной игры в любые современные проекты на высоких настройках графики. Эргономичные кресла и сбалансированное железо.
+                            </p>
+                            <ul class="space-y-2 text-sm text-zinc-300">
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-acidgreen"></i> RTX 3060 Ti / i5-13400F</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-acidgreen"></i> Мониторы 240 Гц ASUS ROG</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-acidgreen"></i> Наушники RedSquare / Мышь Zet Gaming</li>
+                            </ul>
+                            <button onclick="openBookingModal()" class="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 font-cyber text-xs uppercase font-bold rounded-xl text-white transition-all">Забронировать Стандарт</button>
+                        </div>
+                        <div class="relative h-72 sm:h-96 rounded-2xl overflow-hidden border border-zinc-700 group">
+                            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" alt="Standard Zone" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/800x600/121216/ff003c?text=Standard+Zone'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-darkbg/90 via-transparent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Zone 2 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-cardbg border border-zinc-800 rounded-3xl overflow-hidden p-6 sm:p-8">
+                        <div class="relative h-72 sm:h-96 rounded-2xl overflow-hidden border border-zinc-700 group order-2 lg:order-1">
+                            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80" alt="PRO Zone" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/800x600/121216/00ff66?text=PRO+Zone'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-darkbg/90 via-transparent"></div>
+                        </div>
+                        <div class="space-y-6 order-1 lg:order-2">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-neonred/10 border cyber-border-red rounded-lg text-xs font-mono text-neonred">
+                                <i data-lucide="award" class="w-4 h-4"></i> Для киберспортсменов
+                            </div>
+                            <h2 class="text-3xl font-cyber font-bold text-white">PRO Зона</h2>
+                            <p class="text-zinc-400 text-sm leading-relaxed">
+                                Максимальная производительность для шутеров и соревновательных дисциплин. Высокий FPS без единой просадки кадров.
+                            </p>
+                            <ul class="space-y-2 text-sm text-zinc-300">
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-neonred"></i> RTX 4070 Ti / i7-13700K</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-neonred"></i> Мониторы 360 Гц BenQ ZOWIE</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-neonred"></i> Мышь Logitech G Pro X Superlight</li>
+                            </ul>
+                            <button onclick="openBookingModal()" class="px-6 py-3 bg-neonred hover:bg-red-600 font-cyber text-xs uppercase font-bold rounded-xl text-white transition-all cyber-glow-red">Забронировать PRO</button>
+                        </div>
+                    </div>
+
+                    <!-- Zone 3 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-cardbg border border-zinc-800 rounded-3xl overflow-hidden p-6 sm:p-8">
+                        <div class="space-y-6">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-acidgreen/10 border cyber-border-green rounded-lg text-xs font-mono text-acidgreen">
+                                <i data-lucide="crown" class="w-4 h-4"></i> Эксклюзив и приватность
+                            </div>
+                            <h2 class="text-3xl font-cyber font-bold text-white">VIP & Буткемп</h2>
+                            <p class="text-zinc-400 text-sm leading-relaxed">
+                                Отдельные комнаты для командных тренировок или приватной игры с друзьями. Полная звукоизоляция, диваны и консоли PS5.
+                            </p>
+                            <ul class="space-y-2 text-sm text-zinc-300">
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-acidgreen"></i> RTX 4080 / i9-14900K</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-acidgreen"></i> 5 ПК в закрытой комнате + PS5</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-acidgreen"></i> Холодильник с напитками и кондиционер</li>
+                            </ul>
+                            <button onclick="openBookingModal()" class="px-6 py-3 bg-acidgreen hover:bg-emerald-500 font-cyber text-xs uppercase font-bold rounded-xl text-darkbg transition-all cyber-glow-green">Забронировать Буткемп</button>
+                        </div>
+                        <div class="relative h-72 sm:h-96 rounded-2xl overflow-hidden border border-zinc-700 group">
+                            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80" alt="VIP Bootcamp" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/800x600/121216/00ff66?text=VIP+Bootcamp'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-darkbg/90 via-transparent"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="mt-24">
+                    <h3 class="text-2xl sm:text-4xl font-black font-cyber uppercase tracking-wider text-center mb-10">АТМОСФЕРА <span class="text-neonred">DEADMAN</span></h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="h-48 rounded-2xl overflow-hidden border border-zinc-800">
+                            <img src="https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=500&q=80" alt="Gallery 1" class="w-full h-full object-cover hover:scale-110 transition-all duration-300">
+                        </div>
+                        <div class="h-48 rounded-2xl overflow-hidden border border-zinc-800">
+                            <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=500&q=80" alt="Gallery 2" class="w-full h-full object-cover hover:scale-110 transition-all duration-300">
+                        </div>
+                        <div class="h-48 rounded-2xl overflow-hidden border border-zinc-800">
+                            <img src="https://images.unsplash.com/photo-1612287233202-b51d3ed6a90c?auto=format&fit=crop&w=500&q=80" alt="Gallery 3" class="w-full h-full object-cover hover:scale-110 transition-all duration-300">
+                        </div>
+                        <div class="h-48 rounded-2xl overflow-hidden border border-zinc-800">
+                            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=500&q=80" alt="Gallery 4" class="w-full h-full object-cover hover:scale-110 transition-all duration-300">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= PAGE 3: TARIFFS & CALCULATOR ================= -->
+        <div id="page-tariffs" class="page-content">
+            <div class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center space-y-4 mb-16">
+                    <h1 class="text-4xl sm:text-6xl font-black font-cyber uppercase tracking-wider">ТАРИФЫ И <span class="text-neonred">ПАКЕТЫ</span></h1>
+                    <p class="text-zinc-400 max-w-xl mx-auto">Выбирай пакет часов и играй по самым выгодным ценам.</p>
+                </div>
+
+                <!-- Tariffs Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                    <!-- Standard Card -->
+                    <div class="bg-cardbg border border-zinc-800 rounded-3xl p-8 flex flex-col justify-between hover:border-zinc-600 transition-all">
+                        <div>
+                            <div class="text-zinc-400 font-mono text-xs uppercase mb-2">Стандартный пакет</div>
+                            <h3 class="text-2xl font-cyber font-bold text-white mb-4">3 Часа</h3>
+                            <div class="text-4xl font-black font-cyber text-white mb-6">450 <span class="text-zinc-500 text-lg">₽</span></div>
+                            <ul class="space-y-3 text-sm text-zinc-300 mb-8">
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-zinc-400"></i> Доступ в Стандарт зону</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-zinc-400"></i> Списание поминутно</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-zinc-400"></i> Бонусные баллы на карту</li>
+                            </ul>
+                        </div>
+                        <button onclick="openBookingModal()" class="w-full py-3 bg-zinc-800 hover:bg-zinc-700 font-cyber font-bold text-xs uppercase rounded-xl text-white transition-all">Выбрать пакет</button>
+                    </div>
+
+                    <!-- PRO Card (Featured) -->
+                    <div class="bg-cardbg border cyber-border-red rounded-3xl p-8 flex flex-col justify-between relative shadow-xl transform md:-translate-y-4">
+                        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-neonred text-white font-cyber font-bold text-[10px] uppercase tracking-widest px-4 py-1 rounded-full cyber-glow-red">ХИТ СЕЗОНА</div>
+                        <div>
+                            <div class="text-neonred font-mono text-xs uppercase mb-2">Ночной безлимит</div>
+                            <h3 class="text-2xl font-cyber font-bold text-white mb-4">С 22:00 до 08:00</h3>
+                            <div class="text-4xl font-black font-cyber text-neonred mb-6">790 <span class="text-zinc-500 text-lg">₽</span></div>
+                            <ul class="space-y-3 text-sm text-zinc-300 mb-8">
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-neonred"></i> Доступ в PRO и Стандарт зоны</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-neonred"></i> 10 часов чистого гейминга</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-neonred"></i> Энергетик в подарок</li>
+                            </ul>
+                        </div>
+                        <button onclick="openBookingModal()" class="w-full py-3 bg-neonred hover:bg-red-600 font-cyber font-bold text-xs uppercase rounded-xl text-white transition-all cyber-glow-red">Забронировать ночь</button>
+                    </div>
+
+                    <!-- VIP Bootcamp Card -->
+                    <div class="bg-cardbg border border-zinc-800 rounded-3xl p-8 flex flex-col justify-between hover:border-acidgreen transition-all">
+                        <div>
+                            <div class="text-acidgreen font-mono text-xs uppercase mb-2">Командный тренинг</div>
+                            <h3 class="text-2xl font-cyber font-bold text-white mb-4">Буткемп (День)</h3>
+                            <div class="text-4xl font-black font-cyber text-acidgreen mb-6">4500 <span class="text-zinc-500 text-lg">₽</span></div>
+                            <ul class="space-y-3 text-sm text-zinc-300 mb-8">
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-acidgreen"></i> Закрытая комната на 5 ПК</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-acidgreen"></i> Железо RTX 4080</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-acidgreen"></i> Идеально для тренировок турниров</li>
+                            </ul>
+                        </div>
+                        <button onclick="openBookingModal()" class="w-full py-3 bg-cardbg border border-acidgreen text-acidgreen hover:bg-acidgreen hover:text-darkbg font-cyber font-bold text-xs uppercase rounded-xl transition-all">Арендовать комнату</button>
+                    </div>
+                </div>
+
+                <!-- Interactive Price Calculator -->
+                <div class="bg-cardbg border border-zinc-800 rounded-3xl p-8 max-w-4xl mx-auto shadow-2xl">
+                    <h3 class="text-2xl font-cyber font-bold mb-6 text-center uppercase">Калькулятор <span class="text-acidgreen">стоимости</span></h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Выберите игровую зону</label>
+                                <select id="calc-zone" onchange="calculatePrice()" class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white font-medium focus:outline-none focus:border-acidgreen">
+                                    <option value="150">Стандарт зона (150 ₽/час)</option>
+                                    <option value="250">PRO зона (250 ₽/час)</option>
+                                    <option value="500">VIP / Буткемп (500 ₽/час)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Количество часов: <span id="hours-val" class="text-white font-bold">3</span> ч.</label>
+                                <input type="range" id="calc-hours" min="1" max="12" value="3" oninput="calculatePrice()" class="w-full accent-acidgreen bg-zinc-800 h-2 rounded-lg cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="bg-darkbg border border-zinc-800 rounded-2xl p-6 text-center flex flex-col justify-center items-center space-y-4">
+                            <div class="text-xs font-mono uppercase text-zinc-400">Итоговая стоимость</div>
+                            <div id="calc-total" class="text-5xl font-black font-cyber text-acidgreen">450 ₽</div>
+                            <button onclick="openBookingModal()" class="w-full py-3 bg-acidgreen hover:bg-emerald-500 text-darkbg font-cyber font-bold text-xs uppercase rounded-xl transition-all">Забронировать по расчету</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= PAGE 4: TOURNAMENTS ================= -->
+        <div id="page-tournaments" class="page-content">
+            <div class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center space-y-4 mb-16">
+                    <h1 class="text-4xl sm:text-6xl font-black font-cyber uppercase tracking-wider">ТУРНИРЫ И <span class="text-neonred">СОБЫТИЯ</span></h1>
+                    <p class="text-zinc-400 max-w-xl mx-auto">Участвуй в киберспортивных баталиях, забирай денежные призы и славу.</p>
+                </div>
+
+                <!-- Tournaments List -->
+                <div class="space-y-6 max-w-4xl mx-auto">
+                    <!-- Tournament Item 1 -->
+                    <div class="bg-cardbg border cyber-border-red rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="space-y-3 text-center md:text-left">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-neonred/10 rounded-lg text-xs font-mono text-neonred">
+                                <span class="w-2 h-2 rounded-full bg-neonred animate-pulse"></span> Идет регистрация
+                            </div>
+                            <h3 class="text-2xl font-cyber font-bold text-white">CS2 5v5 Deadman Cup #4</h3>
+                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-zinc-400 font-mono">
+                                <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4 text-neonred"></i> 25 октября 2026</span>
+                                <span class="flex items-center gap-1"><i data-lucide="trophy" class="w-4 h-4 text-neonred"></i> Призовой фонд: 50 000 ₽</span>
+                            </div>
+                        </div>
+                        <button onclick="openTournamentModal('CS2 5v5 Deadman Cup #4')" class="px-8 py-3.5 bg-neonred hover:bg-red-600 font-cyber font-bold text-xs uppercase rounded-xl text-white transition-all cyber-glow-red whitespace-nowrap">Участвовать</button>
+                    </div>
+
+                    <!-- Tournament Item 2 -->
+                    <div class="bg-cardbg border border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="space-y-3 text-center md:text-left">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-acidgreen/10 rounded-lg text-xs font-mono text-acidgreen">
+                                <span class="w-2 h-2 rounded-full bg-acidgreen"></span> Скоро начало
+                            </div>
+                            <h3 class="text-2xl font-cyber font-bold text-white">Dota 2 1v1 Mid Only</h3>
+                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-zinc-400 font-mono">
+                                <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4 text-acidgreen"></i> 30 октября 2026</span>
+                                <span class="flex items-center gap-1"><i data-lucide="trophy" class="w-4 h-4 text-acidgreen"></i> Призовой фонд: 25 000 ₽</span>
+                            </div>
+                        </div>
+                        <button onclick="openTournamentModal('Dota 2 1v1 Mid Only')" class="px-8 py-3.5 bg-cardbg border border-acidgreen text-acidgreen hover:bg-acidgreen hover:text-darkbg font-cyber font-bold text-xs uppercase rounded-xl transition-all whitespace-nowrap">Участвовать</button>
+                    </div>
+
+                    <!-- Tournament Item 3 -->
+                    <div class="bg-cardbg border border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 opacity-75">
+                        <div class="space-y-3 text-center md:text-left">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 bg-zinc-800 rounded-lg text-xs font-mono text-zinc-400">
+                                Завершен
+                            </div>
+                            <h3 class="text-2xl font-cyber font-bold text-zinc-300">VALORant Night Showdown</h3>
+                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-zinc-500 font-mono">
+                                <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-4 h-4"></i> 10 октября 2026</span>
+                                <span class="flex items-center gap-1"><i data-lucide="trophy" class="w-4 h-4"></i> Победитель: Team CyberX</span>
+                            </div>
+                        </div>
+                        <button disabled class="px-8 py-3.5 bg-zinc-800 font-cyber font-bold text-xs uppercase rounded-xl text-zinc-500 cursor-not-allowed whitespace-nowrap">Завершен</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================= PAGE 5: CONTACTS & FEEDBACK ================= -->
+        <div id="page-contacts" class="page-content">
+            <div class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center space-y-4 mb-16">
+                    <h1 class="text-4xl sm:text-6xl font-black font-cyber uppercase tracking-wider">КОНТАКТЫ И <span class="text-acidgreen">СВЯЗЬ</span></h1>
+                    <p class="text-zinc-400 max-w-xl mx-auto">Мы находимся в самом центре города. Работаем круглосуточно без выходных.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Contact Info & Map placeholder -->
+                    <div class="space-y-8">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div class="p-6 bg-cardbg border border-zinc-800 rounded-2xl">
+                                <i data-lucide="map-pin" class="text-neonred w-8 h-8 mb-4"></i>
+                                <h4 class="font-cyber font-bold text-white mb-2">Адрес</h4>
+                                <p class="text-zinc-400 text-sm">ул. Кибернетическая, 13, ТРЦ "Matrix", 3 этаж</p>
+                            </div>
+                            <div class="p-6 bg-cardbg border border-zinc-800 rounded-2xl">
+                                <i data-lucide="phone" class="text-acidgreen w-8 h-8 mb-4"></i>
+                                <h4 class="font-cyber font-bold text-white mb-2">Телефон</h4>
+                                <p class="text-zinc-400 text-sm">+7 (999) 666-33-22<br>+7 (800) 555-35-35</p>
+                            </div>
+                        </div>
+
+                        <!-- Mock Map -->
+                        <div class="relative h-72 rounded-3xl overflow-hidden border border-zinc-800 bg-cardbg flex items-center justify-center">
+                            <div class="absolute inset-0 bg-grid opacity-50"></div>
+                            <div class="text-center z-10 space-y-2">
+                                <i data-lucide="compass" class="w-12 h-12 text-neonred mx-auto animate-spin" style="animation-duration: 10s;"></i>
+                                <div class="font-cyber font-bold text-white">Deadman Arena Location</div>
+                                <div class="text-xs text-zinc-400 font-mono">Координаты: 55.751241, 37.618423</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Form -->
+                    <div class="bg-cardbg border border-zinc-800 rounded-3xl p-8 shadow-2xl">
+                        <h3 class="text-2xl font-cyber font-bold text-white mb-2">Обратная связь</h3>
+                        <p class="text-zinc-400 text-sm mb-6">Остались вопросы или предложение о сотрудничестве? Напиши нам.</p>
+                        
+                        <form id="feedback-form" onsubmit="handleFeedbackSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Ваше имя</label>
+                                <input type="text" id="fb-name" required placeholder="Артур Cyber" class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neonred">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Телефон или Telegram</label>
+                                <input type="text" id="fb-contact" required placeholder="+7 999 000-00-00" class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neonred">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Сообщение</label>
+                                <textarea id="fb-message" rows="4" required placeholder="Хочу забронировать буткемп на следующие выходные..." class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neonred"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-4 bg-neonred hover:bg-red-600 font-cyber font-bold text-xs uppercase tracking-wider rounded-xl text-white transition-all cyber-glow-red">Отправить сообщение</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-darkbg border-t border-zinc-800 py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-neonred/10 border cyber-border-red flex items-center justify-center rounded-lg">
+                    <i data-lucide="skull" class="text-neonred w-5 h-5"></i>
+                </div>
+                <span class="font-cyber font-black text-xl tracking-wider text-white">DEADMAN</span>
+            </div>
+            <p class="text-xs text-zinc-500 font-mono">© 2026 Deadman Cyber Club. Все права защищены.</p>
+            <div class="flex items-center gap-4 text-zinc-400">
+                <a href="#" class="hover:text-neonred transition-colors"><i data-lucide="send" class="w-5 h-5"></i></a>
+                <a href="#" class="hover:text-acidgreen transition-colors"><i data-lucide="message-square" class="w-5 h-5"></i></a>
+                <a href="#" class="hover:text-neonblue transition-colors"><i data-lucide="twitch" class="w-5 h-5"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-cardbg border cyber-border-red rounded-3xl p-8 max-w-md w-full mx-4 relative shadow-2xl transform scale-95 transition-transform duration-300" id="booking-modal-box">
+            <button onclick="closeBookingModal()" class="absolute top-6 right-6 text-zinc-400 hover:text-white">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-neonred/10 border cyber-border-red flex items-center justify-center rounded-xl">
+                    <i data-lucide="monitor" class="text-neonred w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-cyber font-bold text-lg text-white">Бронирование ПК</h3>
+                    <p class="text-xs text-zinc-400">Зафиксируй свое место на арене</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleBookingSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Ваше имя</label>
+                    <input type="text" required placeholder="Киберспортсмен" class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neonred">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Телефон</label>
+                    <input type="tel" required placeholder="+7 (999) 000-00-00" class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neonred">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Игровая зона</label>
+                    <select class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neonred">
+                        <option>Стандарт зона (150 ₽/ч)</option>
+                        <option>PRO зона (250 ₽/ч)</option>
+                        <option>VIP / Буткемп (500 ₽/ч)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Количество часов</label>
+                    <input type="number" min="1" max="12" value="3" class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-neonred">
+                </div>
+                <button type="submit" class="w-full py-4 bg-neonred hover:bg-red-600 font-cyber font-bold text-xs uppercase tracking-wider rounded-xl text-white transition-all cyber-glow-red mt-2">Подтвердить бронь</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tournament Registration Modal -->
+    <div id="tournament-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-cardbg border cyber-border-green rounded-3xl p-8 max-w-md w-full mx-4 relative shadow-2xl transform scale-95 transition-transform duration-300" id="tournament-modal-box">
+            <button onclick="closeTournamentModal()" class="absolute top-6 right-6 text-zinc-400 hover:text-white">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 bg-acidgreen/10 border cyber-border-green flex items-center justify-center rounded-xl">
+                    <i data-lucide="trophy" class="text-acidgreen w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-cyber font-bold text-lg text-white" id="tour-modal-title">Регистрация на турнир</h3>
+                    <p class="text-xs text-zinc-400">Займи место в сетке участников</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleTournamentSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Название команды или ник</label>
+                    <input type="text" required placeholder="Team Deadman / [GG] Player" class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-acidgreen">
+                </div>
+                <div>
+                    <label class="block text-xs font-mono text-zinc-400 uppercase mb-2">Капитан / Контакт (Telegram)</label>
+                    <input type="text" required placeholder="@captain_nickname" class="w-full bg-darkbg border border-zinc-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-acidgreen">
+                </div>
+                <button type="submit" class="w-full py-4 bg-acidgreen hover:bg-emerald-500 font-cyber font-bold text-xs uppercase tracking-wider rounded-xl text-darkbg transition-all cyber-glow-green mt-2">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Initialize Lucide Icons
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            calculatePrice();
+        });
+
+        // SPA Navigation Routing
+        function switchPage(pageId) {
+            const pages = document.querySelectorAll('.page-content');
+            pages.forEach(p => {
+                p.classList.remove('active');
+            });
+
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // Update active nav button styles
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                if (btn.getAttribute('data-target') === pageId) {
+                    btn.classList.add('bg-zinc-800', 'text-white');
+                    btn.classList.remove('text-zinc-400');
+                } else {
+                    btn.classList.remove('bg-zinc-800', 'text-white');
+                    btn.classList.add('text-zinc-400');
+                }
+            });
+        }
+
+        // Toggle Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Price Calculator Logic
+        function calculatePrice() {
+            const zoneSelect = document.getElementById('calc-zone');
+            const hoursRange = document.getElementById('calc-hours');
+            const hoursVal = document.getElementById('hours-val');
+            const totalDiv = document.getElementById('calc-total');
+
+            if (!zoneSelect || !hoursRange) return;
+
+            const hourlyRate = parseInt(zoneSelect.value);
+            const hours = parseInt(hoursRange.value);
+
+            hoursVal.innerText = hours;
+            const total = hourlyRate * hours;
+            totalDiv.innerText = `${total} ₽`;
+        }
+
+        // Toast Notification
+        function showToast(title, description) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-desc').innerText = description;
+
+            toast.classList.remove('translate-y-28', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-28', 'opacity-0');
+            }, 4000);
+        }
+
+        // Booking Modal Actions
+        function openBookingModal() {
+            const modal = document.getElementById('booking-modal');
+            const box = document.getElementById('booking-modal-box');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+                box.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeBookingModal() {
+            const modal = document.getElementById('booking-modal');
+            const box = document.getElementById('booking-modal-box');
+            modal.classList.add('opacity-0');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function handleBookingSubmit(e) {
+            e.preventDefault();
+            closeBookingModal();
+            showToast('Бронь принята!', 'Менеджер свяжется с вами для подтверждения в течение 5 минут.');
+        }
+
+        // Tournament Modal Actions
+        function openTournamentModal(tourName) {
+            const modal = document.getElementById('tournament-modal');
+            const box = document.getElementById('tournament-modal-box');
+            document.getElementById('tour-modal-title').innerText = tourName;
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+                box.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeTournamentModal() {
+            const modal = document.getElementById('tournament-modal');
+            const box = document.getElementById('tournament-modal-box');
+            modal.classList.add('opacity-0');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function handleTournamentSubmit(e) {
+            e.preventDefault();
+            closeTournamentModal();
+            showToast('Регистрация успешна!', 'Команда добавлена в список участников турнира.');
+        }
+
+        // Feedback Form Submission
+        function handleFeedbackSubmit(e) {
+            e.preventDefault();
+            document.getElementById('feedback-form').reset();
+            showToast('Сообщение отправлено!', 'Мы ответим вам в самое ближайшее время.');
+        }
+    </script>
+</body>
+</html>
