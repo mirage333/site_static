@@ -55,31 +55,3 @@ deadman-club/
 | **README.md** | 10 | Полнота и качество документации проекта. |
 | **LocalStorage / JS State** | 10 | Реализация интерактивных расчетов и динамических модальных сценариев. |
 | **GitHub Pages** | 5 | Успешный деплой и доступность сайта онлайн. |
-
-graph TD
-    subgraph "Сайт 'Deadman'"
-        Index["Главная<br>• Hero-секция<br>• Быстрое бронирование<br>• Акции и новости"]
-        Zones["Зоны и Цены<br>• Общий зал<br>• VIP / Буткемп<br>• PS5 / Lounge<br>• Калькулятор тарифов"]
-        Tournaments["Турниры<br>• Расписание ивентов<br>• Призовой фонд<br>• Регистрация команды"]
-        Gallery["Галерея<br>• Интерьер клуба<br>• Сетапы и девайсы<br>• Фильтрация фото"]
-        Contacts["Контакты и Отзывы<br>• Карта проезда<br>• График работы<br>• Форма обратной связи"]
-    end
-
-    subgraph "Интерактивность и JS"
-        Theme["Переключатель темы"]
-        LocalStorage["Сохранение в LocalStorage"]
-        FormValidation["Валидация форм"]
-        MobileMenu["Мобильное меню"]
-    end
-
-    Index --> Zones
-    Index --> Tournaments
-    Index --> Gallery
-    Index --> Contacts
-
-    Zones --> LocalStorage
-    Tournaments --> FormValidation
-    Contacts --> FormValidation
-    
-    Index -.-> Theme
-    Index -.-> MobileMenu
